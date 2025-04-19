@@ -6,15 +6,9 @@ import locate
 import pyperclip as pc
 
 
-steps = ['cvImgs/windowsSearch.png', 
-         'cvImgs/googleIcon.png', 
-         'cvImgs/googleSearch.png']
-
-
-def checkIfTabAlreadyOpen():
+def checkIfTabAlreadyOpen(steps):
     for i, img in enumerate(reversed(steps), 1):
-        count = len(steps) - i
-        print(count)
+        count = len(steps) - i+1
         res = tryMoveToImage(img, count)
         if res is not None:
             return res
@@ -23,7 +17,7 @@ def checkIfTabAlreadyOpen():
             if res is not None:
                 return res
         count-=1
-
+    print('--------------------')
     return count
 
 def tryMoveToImage(img, returnValue):
@@ -31,28 +25,38 @@ def tryMoveToImage(img, returnValue):
     if con > 0.8:
         print(img)
         try:
-            locate.moveToOpp(pg.locateOnScreen(img, confidence=con))
+            locate.moveToImage(pg.locateOnScreen(img, confidence=con))
             return returnValue
         except Exception as e:
-            print("Unexpected error:", e)
+            print("Unexpected error:", img)
     return None
 
 
-def navToGmail():
-    for img in range(checkIfTabAlreadyOpen(), len(steps)):
-        locate.moveToOpp(pg.locateOnScreen(steps[img], confidence=locate.findConfidence(steps[img])))
+def navSteps(steps, watchFor):
+    for img in range(checkIfTabAlreadyOpen(steps), len(steps)):
+        locate.moveToImage(pg.locateOnScreen(steps[img], confidence=locate.findConfidence(steps[img])))
+        if steps[img] == watchFor:
+            print('HI')
+            copyAndPaste("google")
+
+def copyAndPaste(word):
+    pc.copy(word)
+    pg.hotkey("ctrl", "v")
+    time.sleep(1)
+    pg.press("enter")
 
 def main():
-    navToGmail()
+    steps = ['cvImgs/windowsSearch.png',  
+         'cvImgs/googleSearch.png']
+    navSteps(steps, 'cvImgs/windowsSearch.png')
 
-    pc.copy("gmail")
-    pg.hotkey("ctrl", "v")
-    pg.press("enter")
-    x, y = pg.position()
-    width, height = pg.size()
-    pg.moveTo(0, height//8, duration = 1)
-    x, y = pg.position()
-    locate.cropScreenshot(x,y, (width//4), height//5)
+    copyAndPaste('gmail')
+
+    locate.readScreenshot('email', 1)
+    time.sleep(3)
+    steps = ['cvImgs/magGlass.png']
+    navSteps(steps, None)
+    copyAndPaste('no-reply')
 
 
 if __name__ == "__main__":

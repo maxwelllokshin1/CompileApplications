@@ -1,31 +1,22 @@
-import pytesseract
-from PIL import Image
-import pyautogui as pg
-from pytesseract import Output
+import pandas as pd
 
-pytesseract.pytesseract.tesseract_cmd=r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+# Create a DataFrame
+data = {
+    "Name": ["Alice", "Bob"],
+    "Age": [30, 25],
+    "City": ["New York", "Los Angeles"]
+}
+df = pd.DataFrame(data)
 
-screenshot = pg.screenshot()
+# Define a function to highlight the second row (index 1)
+def highlight_second_row(row):
+    return ['background-color: yellow' if row.name == 1 else '' for _ in row]
 
-# x, y = pg.position()
-# width, height = pg.size()
+# Apply the style
+styled_df = df.style.apply(highlight_second_row, axis=1)
 
-# x = 0
-# y = 0
-# width = width - x
-# height = height - y
-# crop_box = (x, y, x + width, y + height)
+# Save to Excel with styling
+styled_df.to_excel("example.xlsx", index=False, engine='openpyxl')
 
-# # Crop the image
-# cropped_image = screenshot.crop(crop_box)
-
-# # Save or display the cropped image
-# cropped_image.show()
-data = pytesseract.image_to_data(screenshot, lang = 'eng', output_type=Output.DICT)
-texts = data['text']
-
-# You can filter out empty strings if needed
-filtered_texts = [word for word in texts if word.strip() == 'Email']
-
-print(filtered_texts)
+df.to_csv("ex.csv", index=False)
 

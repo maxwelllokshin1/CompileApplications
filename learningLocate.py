@@ -27,7 +27,7 @@ screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
 
 # detect several objects on screen
 
-for newTab in pg.locateAllOnScreen('newTab.png', confidence=0.7):
+for newTab in pg.locateAllOnScreen('cvImgs/newTab.png', confidence=0.7):
     cv2.rectangle(
     screenshot, 
     (newTab.left, newTab.top),
